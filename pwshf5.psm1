@@ -1178,8 +1178,11 @@ function Remove-F5Policy {
 
 function Get-F5Monitor {
     param(
-        [string][Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()]
+        [string][Parameter(ParameterSetName = "single", Mandatory = $false)][ValidateNotNullOrEmpty()]
         $name,
+
+        [string][Parameter(ParameterSetName = "single", Mandatory = $true)][ValidateNotNullOrEmpty()]
+        $type,
 
         [string][Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()]
         $f5_connection
@@ -1192,7 +1195,7 @@ function Get-F5Monitor {
 
     # If we're only looking for a specific pool
     if ($name) {
-        $req.Uri += "/$name"
+        $req.Uri += "/$type/$name"
     }
 
     $res = Invoke-F5RestMethod $req $f5_connection
@@ -1239,12 +1242,15 @@ function Remove-F5Monitor {
         [string][Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
         $name,
 
+        [string][Parameter(Mandatory = $true)][ValidateNotNullOrEmpty()]
+        $type,
+
         [string][Parameter(Mandatory = $false)][ValidateNotNullOrEmpty()]
         $f5_connection
     )
 
     $req = @{
-        Uri    = "/ltm/monitor/$name"
+        Uri    = "/ltm/monitor/$type/$name"
         Method = 'DELETE'
     }
 
